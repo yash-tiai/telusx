@@ -4,6 +4,11 @@ from pydantic import BaseModel
 from enum import Enum
 
 
+class ActivityStatus(str, Enum):
+    IN_PROCESS = 'IN_PROCESS'
+    COMPLETED = 'COMPLETED'
+    PENDING = 'PENDING'
+
 class CountryCode(str, Enum):
     IN = "IN"  # India
     US = "US"  # United States
@@ -40,6 +45,9 @@ class FraudCheckRequest(BaseModel):
 
 class FraudCheckUser(FraudCheckRequest):
     id: int
+    anomaly_score: int | None
+    is_anomalous: bool | None
+    status: ActivityStatus
 
 
 class FraudUserListResponse(BaseModel):

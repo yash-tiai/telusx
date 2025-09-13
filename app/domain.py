@@ -1,17 +1,19 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from schema.fraud_check import FraudCheckRequest, FraudCheckUser
-from app.models.user_login_activity import UserLoginActivity
+from models import UserLoginActivity
+from schema.fraud_check_schema import FraudCheckRequest, FraudCheckUser
+from app.models.user_verfication_info import UserVerificationInfo
 from models.base import get_db
 
 
-async def check_login_fraud(request: FraudCheckRequest):
-    activity = await add_fraud_check_record(request)
-    update_risk_engine(activity)
+async def check_login_fraud(request: FraudCheckRequest, db):
+    activity = await add_login_activity_log(request, db)
+    base_info = UserVerificationInfo.get_by_user_id(activity.user_id, db)
+    update_risk_engine(activity, base_info.country, base_info.timezone)
 
 
-async def add_fraud_check_record(request: FraudCheckRequest, db: Session = Depends(get_db)) -> UserLoginActivity:
+async def add_login_activity_log(request: FraudCheckRequest, db) -> UserLoginActivity:
     activity = UserLoginActivity(
         user_id=request.user_id,
         country=request.ip_country,
@@ -24,8 +26,8 @@ async def add_fraud_check_record(request: FraudCheckRequest, db: Session = Depen
     return activity
 
 
-def update_risk_engine(activity: UserLoginActivity) -> None:
-    print("Updating risk engine with activity:", activity)
+def update_risk_engine(activity: UserLoginActivity, base_country: str, base_timezone: str) -> None:
+    print("Updating risk engine with activity:", activity, base_country, base_timezone)
 
 
 async def get_fraud_user_data(db: Session = Depends(get_db)) -> list[FraudCheckUser | None]:
@@ -38,6 +40,9 @@ async def get_fraud_user_data(db: Session = Depends(get_db)) -> list[FraudCheckU
             ip_country=user.country,
             ip_timezone=user.timezone,
             device_hash=user.device_hash,
-            login_at=user.created_on
+            login_at=user.created_on,
+            anomaly_score=user.anomaly_score,
+            is_anomalous=user.is_anomalous,
+            status=user.status
         ))
     return user_data
