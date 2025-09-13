@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 from enum import Enum
 
@@ -24,13 +26,21 @@ class Timezone(str, Enum):
     # 👉 add more as needed
 
 
+class FraudCheckResponse(BaseModel):
+    success: bool
+
+
 class FraudCheckRequest(BaseModel):
     user_id: str
     ip_country: CountryCode
     ip_timezone: Timezone
     device_hash: str
-    login_at: str  # ISO 8601 format
+    login_at: datetime  # ISO 8601 format
 
 
-class FraudCheckResponse(BaseModel):
-    success: bool
+class FraudCheckUser(FraudCheckRequest):
+    id: int
+
+
+class FraudUserListResponse(BaseModel):
+    data: list[FraudCheckUser] = []
