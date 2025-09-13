@@ -9,6 +9,7 @@ class ActivityStatus(str, Enum):
     COMPLETED = 'COMPLETED'
     PENDING = 'PENDING'
 
+
 class CountryCode(str, Enum):
     IN = "IN"  # India
     US = "US"  # United States
@@ -20,15 +21,23 @@ class CountryCode(str, Enum):
     SG = "SG"  # Singapore
     JP = "JP"  # Japan
     CN = "CN"  # China
+    UK = "UK"  # United Kingdom
 
 
 class Timezone(str, Enum):
-    IST = "Asia/Kolkata"
-    UTC = "UTC"
-    PST = "America/Los_Angeles"
-    EST = "America/New_York"
-    CET = "Europe/Berlin"
-    # 👉 add more as needed
+    IST = "IST"
+    PST = "PST"
+    EST = "EST"
+    CET = "CET"
+    GMT = "GMT"
+    JST = "JST"
+    AEST = "AEST"
+    SGT = "SGT"
+    CST = "CST"
+
+class IspType(str, Enum):
+    residential = "residential"
+    datacenter = "datacenter"
 
 
 class FraudCheckResponse(BaseModel):
@@ -41,12 +50,18 @@ class FraudCheckRequest(BaseModel):
     ip_timezone: Timezone
     device_hash: str
     login_at: datetime  # ISO 8601 format
+    isp_type: IspType  # e.g., "residential", "datacenter"
+    vpn_flag: bool  # True if VPN is used, else False
 
 
-class FraudCheckUser(FraudCheckRequest):
+class FraudCheckUser(BaseModel):
     id: int
+    user_id: str
+    ip_country: str
+    ip_timezone: str
+    login_at: datetime
     anomaly_score: int | None
-    is_anomalous: bool | None
+    is_anomalous: int | None
     status: ActivityStatus
 
 

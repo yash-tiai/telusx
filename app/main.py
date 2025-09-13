@@ -11,7 +11,7 @@ def init_router(app):
     app.include_router(health_router, prefix="/api/v1", tags=["Health"])
 
 
-def load_model():
+def train_ml_model():
     """Load the trained Isolation Forest model"""
     try:
         model = joblib.load("risk_engine_iforest.pkl")
@@ -24,15 +24,9 @@ def load_model():
         print(f"Error loading model: {e}")
         return None
 
-# Load the model when the app starts
-model = load_model()
 
 init_router(app)
-if __name__ == "__main__":
-    uvicorn.run(
-        "app.main:app",  # app instance
-        host="0.0.0.0",
-        port=8000,
-        reload=True  # set False in production
-    )
 
+if __name__ == "__main__":
+    model = train_ml_model()
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

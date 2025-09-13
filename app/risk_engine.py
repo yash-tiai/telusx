@@ -4,7 +4,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
-from sklearn.preprocessing import LabelEncoder
 
 def detect_login_anomalies(login_data, base_country="IN", base_timezone="IST", contamination=0.3, random_state=42):
     """
@@ -32,7 +31,6 @@ def detect_login_anomalies(login_data, base_country="IN", base_timezone="IST", c
     
     print(f"Processing {len(df)} login records...")
     print(f"Base country: {base_country}, Base timezone: {base_timezone}")
-    
     # ============================
     # 3. Feature Engineering
     # ============================
@@ -81,30 +79,30 @@ def detect_login_anomalies(login_data, base_country="IN", base_timezone="IST", c
     
     return df
 
-# ============================
-# 5. Example Usage
-# ============================
-if __name__ == "__main__":
-    # Sample login data
-    sample_data = [
-        # Normal logins (India, same device, no VPN)
-        {"user_id": "u123", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-        {"user_id": "u123", "login_time": "2025-09-12 14:15:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-        {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-        {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "AU", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-        {"user_id": "u1234", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-        
-        # Suspicious logins (different country, VPN, new device, odd hour)
-        {"user_id": "u123", "login_time": "2025-09-12 02:00:00", "ip_country": "RU", "timezone": "IST", "device_hash": "Z9Y8X7", "isp_type": "datacenter", "vpn_flag": True},
-        {"user_id": "u123", "login_time": "2025-09-12 03:30:00", "ip_country": "US", "timezone": "IST", "device_hash": "P9Q8W7", "isp_type": "datacenter", "vpn_flag": True}
-    ]
-    
-    # Run anomaly detection with default base country and timezone
-    results = detect_login_anomalies(sample_data)
-    
-    # Example with custom base country and timezone
-    # results = detect_login_anomalies(sample_data, base_country="US", base_timezone="EST")
-    
-    # Show results
-    print("\nResults:")
-    print(results[["user_id", "login_time", "ip_country", "device_hash", "anomaly_score", "is_anomaly"]])
+# # ============================
+# # 5. Example Usage
+# # ============================
+# if __name__ == "__main__":
+#     # Sample login data
+#     sample_data = [
+#         # Normal logins (India, same device, no VPN)
+#         {"user_id": "u123", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+#         {"user_id": "u123", "login_time": "2025-09-12 14:15:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+#         {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+#         {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "AU", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+#         {"user_id": "u1234", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+#
+#         # Suspicious logins (different country, VPN, new device, odd hour)
+#         {"user_id": "u123", "login_time": "2025-09-12 02:00:00", "ip_country": "RU", "timezone": "IST", "device_hash": "Z9Y8X7", "isp_type": "datacenter", "vpn_flag": True},
+#         {"user_id": "u123", "login_time": "2025-09-12 03:30:00", "ip_country": "US", "timezone": "IST", "device_hash": "P9Q8W7", "isp_type": "datacenter", "vpn_flag": True}
+#     ]
+#
+#     # Run anomaly detection with default base country and timezone
+#     results = detect_login_anomalies(sample_data)
+#
+#     # Example with custom base country and timezone
+#     # results = detect_login_anomalies(sample_data, base_country="US", base_timezone="EST")
+#
+#     # Show results
+#     print("\nResults:")
+#     print(results[["user_id", "login_time", "ip_country", "device_hash", "anomaly_score", "is_anomaly"]])

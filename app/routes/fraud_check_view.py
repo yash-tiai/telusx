@@ -8,13 +8,13 @@ from app import domain
 fraud_check_router = APIRouter()
 
 
-@fraud_check_router.post("/check-login-fraud/", response_model=FraudCheckResponse)
+@fraud_check_router.post("/check-login-fraud/", response_model=FraudCheckResponse, tags=["Fraud Check"])
 async def check_login_fraud(login_data: FraudCheckRequest, db: Session = Depends(get_db)):
     await domain.check_login_fraud(login_data, db)
     return FraudCheckResponse(success=True)
 
 
-@fraud_check_router.post("/get-login-fraud/", response_model=FraudUserListResponse)
+@fraud_check_router.get("/get-login-fraud/", response_model=FraudUserListResponse, tags=["Fraud Check"])
 async def get_login_fraud_users(db: Session = Depends(get_db)):
-    users = await domain.get_fraud_user_data(db)
+    users = await domain.get_filtered_fraud_user_data(db)
     return FraudUserListResponse(data=users)
