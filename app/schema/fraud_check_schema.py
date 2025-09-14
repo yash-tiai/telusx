@@ -22,6 +22,7 @@ class CountryCode(str, Enum):
     JP = "JP"  # Japan
     CN = "CN"  # China
     UK = "UK"  # United Kingdom
+    RU = "RU"  # Russia
 
 
 class Timezone(str, Enum):
@@ -43,6 +44,8 @@ class IspType(str, Enum):
 
 class FraudCheckResponse(BaseModel):
     success: bool
+    is_anomaly: str
+    anomaly_score: float | None
 
 
 class FraudCheckRequest(BaseModel):

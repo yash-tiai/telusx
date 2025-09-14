@@ -9,6 +9,7 @@ from risk_engine import get_anomaly_results_as_dict
 from schema.fraud_check_schema import FraudCheckRequest, FraudCheckUser, CountryCode, Timezone
 from app.models.user_verfication_info import UserVerificationInfo
 from models.base import get_db
+from sdk import send_slack_teams_message
 
 
 async def check_login_fraud(request: FraudCheckRequest, db) -> None:
@@ -20,12 +21,14 @@ async def check_login_fraud(request: FraudCheckRequest, db) -> None:
     else:
         base_timezone = base_info.timezone
         base_country = base_info.country
-
     all_data = await UserLoginActivity.get_all_login_activities(activity.user_id, db)
     data = get_anomaly_results_as_dict(all_data, base_country, base_timezone)
     anomaly_score, is_anomaly = _extract_anomaly_scores(activity, data)
     if anomaly_score is not None and is_anomaly is not None:
         activity.update_fraud_status(anomaly_score, is_anomaly, db)
+    if is_anomaly == "Anomaly":
+        send_slack_teams_message(request)
+    return
 
 
 def _extract_anomaly_scores(activity, anomaly_data: dict) -> tuple[Optional[float], Optional[bool]]:
