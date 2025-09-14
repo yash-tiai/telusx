@@ -35,6 +35,7 @@ class Timezone(str, Enum):
     SGT = "SGT"
     CST = "CST"
 
+
 class IspType(str, Enum):
     residential = "residential"
     datacenter = "datacenter"
@@ -60,8 +61,8 @@ class FraudCheckUser(BaseModel):
     ip_country: str
     ip_timezone: str
     login_at: datetime
-    anomaly_score: int | None
-    is_anomalous: int | None
+    anomaly_score: float | None
+    is_anomalous: str | None
     status: ActivityStatus
 
 

@@ -76,9 +76,9 @@ def detect_login_anomalies(login_data, base_country="IN", base_timezone="IST", c
     # Ensure vpn_flag is boolean
     if 'vpn_flag' in df.columns:
         df['vpn_flag'] = df['vpn_flag'].astype(bool)
-    
-    print(f"Processing {len(df)} login records...")
-    print(f"Base country: {base_country}, Base timezone: {base_timezone}")
+
+    # print(f"Processing {len(df)} login records...")
+    # print(f"Base country: {base_country}, Base timezone: {base_timezone}")
     # ============================
     # 3. Feature Engineering
     # ============================
@@ -111,7 +111,7 @@ def detect_login_anomalies(login_data, base_country="IN", base_timezone="IST", c
     features = ["geo_match", "device_consistency", "login_hour", "isp_type_enc", "vpn_flag"]
     X = df[features]
     
-    print("Feature Data:\n", X)
+    # print("Feature Data:\n", X)
     
     # ============================
     # 4. Train Isolation Forest

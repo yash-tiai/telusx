@@ -1,5 +1,5 @@
 import pytz
-from sqlalchemy import Column, Integer, String, DateTime, func, Boolean, Enum
+from sqlalchemy import Column, Integer, String, DateTime, func, Boolean, Enum, Float
 from app.models.base import Base
 from schema.fraud_check_schema import ActivityStatus, FraudCheckRequest, IspType
 
@@ -15,10 +15,10 @@ class UserLoginActivity(Base):
     device_hash = Column(String(100), nullable=False)
     timezone = Column(String(100), nullable=False)
     vpn_flag = Column(Boolean, nullable=True)
-    isp_type = Column(Enum(IspType), nullable=False)  # 🔹 Now Enum instead of String
+    isp_type = Column(Enum(IspType), nullable=False)
     status = Column(String(50), nullable=False, default=ActivityStatus.IN_PROCESS)
-    anomaly_score = Column(Integer, nullable=True)
-    is_anomalous = Column(Boolean, nullable=True)
+    anomaly_score = Column(Float, nullable=True)
+    is_anomalous = Column(String(20), nullable=True)
 
     @classmethod
     async def add_login_activity_log(cls, request: FraudCheckRequest, db) -> "UserLoginActivity":
@@ -52,3 +52,9 @@ class UserLoginActivity(Base):
                 "login_time": i.created_on.astimezone(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S"),
             })
         return result
+
+    def update_fraud_status(self, anomaly_score: float, is_anomaly: bool, db) -> None:
+        self.anomaly_score = anomaly_score
+        self.is_anomalous = is_anomaly
+        self.status = ActivityStatus.COMPLETED
+        db.commit()

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytz
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -14,11 +16,20 @@ async def check_login_fraud(request: FraudCheckRequest, db) -> None:
     base_info = UserVerificationInfo.get_by_user_id(activity.user_id, db)
     all_data = await UserLoginActivity.get_all_login_activities(activity.user_id, db)
     data = get_anomaly_results_as_dict(all_data, base_info.country, base_info.timezone)
+    anomaly_score, is_anomaly = _extract_anomaly_scores(activity, data)
+    if anomaly_score is not None and is_anomaly is not None:
+        activity.update_fraud_status(anomaly_score, is_anomaly, db)
+
+
+def _extract_anomaly_scores(activity, anomaly_data: dict) -> tuple[Optional[float], Optional[bool]]:
     dt_str = activity.created_on.astimezone(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S")
-    print('--------', dt_str, data[dt_str])
+    record = anomaly_data.get(dt_str, {})
+    print("record------", record)
+    return record.get("anomaly_score"), record.get("is_anomaly")
+
 
 async def get_filtered_fraud_user_data(db: Session = Depends(get_db)) -> list[FraudCheckUser | None]:
-    users = db.query(UserLoginActivity).filter(UserLoginActivity.is_anomalous == True).all()
+    users = db.query(UserLoginActivity).filter(UserLoginActivity.is_anomalous == 'Anomaly').all()
     result = list()
     for user in users:
         result.append(FraudCheckUser(
