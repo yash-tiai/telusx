@@ -132,18 +132,18 @@ def detect_login_anomalies(login_data, base_country="IN", base_timezone="IST", c
 # # ============================
 # if __name__ == "__main__":
 #     # Sample login data
-#     sample_data = [
-#         # Normal logins (India, same device, no VPN)
-#         {"user_id": "u123", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-#         {"user_id": "u123", "login_time": "2025-09-12 14:15:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-#         {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-#         {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "AU", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-#         {"user_id": "u1234", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
-#
-#         # Suspicious logins (different country, VPN, new device, odd hour)
-#         {"user_id": "u123", "login_time": "2025-09-12 02:00:00", "ip_country": "RU", "timezone": "IST", "device_hash": "Z9Y8X7", "isp_type": "datacenter", "vpn_flag": True},
-#         {"user_id": "u123", "login_time": "2025-09-12 03:30:00", "ip_country": "US", "timezone": "IST", "device_hash": "P9Q8W7", "isp_type": "datacenter", "vpn_flag": True}
-#     ]
+sample_data = [
+    # Normal logins (India, same device, no VPN)
+    {"user_id": "u123", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+    {"user_id": "u123", "login_time": "2025-09-12 14:15:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+    {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+    {"user_id": "u123", "login_time": "2025-09-12 09:05:00", "ip_country": "AU", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+    {"user_id": "u1234", "login_time": "2025-09-12 10:30:00", "ip_country": "IN", "timezone": "IST", "device_hash": "A1B2C3", "isp_type": "residential", "vpn_flag": False},
+
+    # Suspicious logins (different country, VPN, new device, odd hour)
+    {"user_id": "u123", "login_time": "2025-09-12 02:00:00", "ip_country": "RU", "timezone": "IST", "device_hash": "Z9Y8X7", "isp_type": "datacenter", "vpn_flag": True},
+    {"user_id": "u123", "login_time": "2025-09-12 03:30:00", "ip_country": "US", "timezone": "IST", "device_hash": "P9Q8W7", "isp_type": "datacenter", "vpn_flag": True}
+]
 #
 #     # Run anomaly detection with default base country and timezone
 #     results = detect_login_anomalies(sample_data)

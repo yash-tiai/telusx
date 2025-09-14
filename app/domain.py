@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from models import UserLoginActivity
 from risk_engine import get_anomaly_results_as_dict
-from schema.fraud_check_schema import FraudCheckRequest, FraudCheckUser
+from schema.fraud_check_schema import FraudCheckRequest, FraudCheckUser, CountryCode, Timezone
 from app.models.user_verfication_info import UserVerificationInfo
 from models.base import get_db
 
@@ -14,8 +14,15 @@ from models.base import get_db
 async def check_login_fraud(request: FraudCheckRequest, db) -> None:
     activity = await UserLoginActivity.add_login_activity_log(request, db)
     base_info = UserVerificationInfo.get_by_user_id(activity.user_id, db)
+    if not base_info:
+        base_country = CountryCode.IN
+        base_timezone = Timezone.IST
+    else:
+        base_timezone = base_info.timezone
+        base_country = base_info.country
+
     all_data = await UserLoginActivity.get_all_login_activities(activity.user_id, db)
-    data = get_anomaly_results_as_dict(all_data, base_info.country, base_info.timezone)
+    data = get_anomaly_results_as_dict(all_data, base_country, base_timezone)
     anomaly_score, is_anomaly = _extract_anomaly_scores(activity, data)
     if anomaly_score is not None and is_anomaly is not None:
         activity.update_fraud_status(anomaly_score, is_anomaly, db)
@@ -24,7 +31,6 @@ async def check_login_fraud(request: FraudCheckRequest, db) -> None:
 def _extract_anomaly_scores(activity, anomaly_data: dict) -> tuple[Optional[float], Optional[bool]]:
     dt_str = activity.created_on.astimezone(pytz.UTC).strftime("%Y-%m-%d %H:%M:%S")
     record = anomaly_data.get(dt_str, {})
-    print("record------", record)
     return record.get("anomaly_score"), record.get("is_anomaly")
 
 
