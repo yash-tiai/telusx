@@ -5,6 +5,54 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
 
+
+def get_anomaly_results_as_dict(login_data, base_country="IN", base_timezone="IST", contamination=0.3, random_state=42):
+    """
+    Call detect_login_anomalies and convert the results into a dictionary with login_time as key.
+
+    Args:
+        login_data (list): List of dictionaries containing login information
+        base_country (str): Expected country code for the base timezone (default: "IN")
+        base_timezone (str): Base timezone to compare against (default: "IST")
+        contamination (float): Expected proportion of anomalies (default: 0.3)
+        random_state (int): Random state for reproducibility (default: 42)
+
+    Returns:
+        dict: Dictionary with login_time as key and all data as value
+    """
+
+    # Call the detect_login_anomalies function
+    results_df = detect_login_anomalies(login_data, base_country, base_timezone, contamination, random_state)
+
+    # Convert DataFrame to dictionary with login_time as key
+    results_dict = {}
+
+    for _, row in results_df.iterrows():
+        login_time = row['login_time']
+
+        # Create a dictionary with all the data for this login
+        login_data_dict = {
+            'user_id': row['user_id'],
+            'ip_country': row['ip_country'],
+            'timezone': row['timezone'],
+            'device_hash': row['device_hash'],
+            'isp_type': row['isp_type'],
+            'vpn_flag': row['vpn_flag'],
+            'login_hour': row['login_hour'],
+            'geo_match': row['geo_match'],
+            'device_consistency': row['device_consistency'],
+            'isp_type_enc': row['isp_type_enc'],
+            'anomaly_score': float(row['anomaly_score']),
+            'is_anomaly': row['is_anomaly']
+        }
+
+        # Use login_time as the key
+        results_dict[login_time] = login_data_dict
+
+    return results_dict
+
+
+
 def detect_login_anomalies(login_data, base_country="IN", base_timezone="IST", contamination=0.3, random_state=42):
     """
     Detect anomalous login attempts using Isolation Forest algorithm.

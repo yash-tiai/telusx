@@ -3,7 +3,21 @@ import joblib
 from fastapi import FastAPI
 from app.routes import fraud_check_router, health_router
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="FastAPI Service")
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # frontend origins
+    allow_credentials=True,
+    allow_methods=["*"],  # allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # allow all headers
+)
 
 
 def init_router(app):
